@@ -35,7 +35,7 @@ if sys.platform == "cygwin" or sys.platform.startswith("win"):
         """
         fh = msvcrt.get_osfhandle(fp.fileno())
         # TODO: call PeekNamedPipe on the HANDLE to find out how many bytes
-        # are waiting and erad them.
+        # are waiting and read them.
 else:
     import fcntl
     def make_nonblocking(fp):
@@ -104,11 +104,11 @@ def assert_equal(arg1, arg2):
     """
     assert arg1 == arg2, "Got %s, expected %s" % (repr(arg1), repr(arg2))
 
-"""============================================================================
-
-INDIVIDUAL TESTS START HERE
-
-============================================================================"""
+# =============================================================================
+#
+# INDIVIDUAL TESTS START HERE
+#
+# =============================================================================
 
 
 @ncat_test("Server default listen address and port IPv4")
@@ -133,11 +133,11 @@ def server_default_listen_address_and_port_ipv4():
         c.terminate()
         c2.terminate()
 
-"""============================================================================
-
-INDIVIDUAL TESTS END HERE
-
-============================================================================"""
+# =============================================================================
+#
+# INDIVIDUAL TESTS END HERE
+#
+# =============================================================================
 
 
 def tests_worker(q, unexpected_successes, successes, expected_failures,
