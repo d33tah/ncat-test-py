@@ -56,7 +56,7 @@ else:
 
 NUM_THREADS = 2
 WAIT_TIMEOUT = 0.1
-tests = []
+TESTS = []
 STDOUT_LOCK = threading.Lock()
 
 
@@ -66,10 +66,10 @@ def ncat_test(name, xfail=False):
     "tests" global variable and adds metadata to its object.
     """
     def wrap(f):
-        global tests
+        global TESTS
         f.name = name
         f.xfail = xfail
-        tests += [f]
+        TESTS += [f]
         return f
     return wrap
 
@@ -212,7 +212,7 @@ def run_tests():
         #t.daemon = True # TODO: which is better here?
         t.start()
 
-    for test in tests:
+    for test in TESTS:
         q.put(test)
 
     q.join()
