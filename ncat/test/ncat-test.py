@@ -87,12 +87,9 @@ def server_default_listen_address_and_port_ipv4():
 
         return True
     finally:
-        try:
-            s.terminate()
-            c.terminate()
-            c2.terminate()
-        except:
-            pass
+        s.terminate()
+        c.terminate()
+        c2.terminate()
 
 """============================================================================
 
