@@ -152,12 +152,14 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
         while True:
             test = q.get(timeout=WAIT_TIMEOUT)
             should_complete = True
+
             success = False
             error_msg = ""
             try:
                 success = test()
             except Exception as e:
                 error_msg = " (%s)" % repr(e)
+
             if success:
                 msg = "PASS:\t%s" % test.name
                 if test.xfail:
@@ -194,6 +196,7 @@ def run_tests():
     failures = queue.Queue()
     unexpected_successes = queue.Queue()
     expected_failures = queue.Queue()
+
     q = queue.Queue()
 
     args = [q, unexpected_successes, successes, expected_failures, failures]
