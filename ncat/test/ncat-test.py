@@ -145,7 +145,7 @@ def run_tests():
     q = queue.Queue()
 
     args = [q, unexpected_successes, successes, expected_failures, failures]
-    for i in range(NUM_THREADS):
+    for _ in range(NUM_THREADS):
         t = threading.Thread(target=tests_worker, args=args)
         #t.daemon = True
         t.start()
