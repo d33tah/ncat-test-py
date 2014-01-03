@@ -164,7 +164,7 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
                 error_msg = " (line %d: %s)" % (lineno, repr(e))
 
             if success:
-                msg = "PASS:\t%s" % test.name
+                msg = "SUCC:\t%s" % test.name
                 if test.xfail:
                     msg = "UNEX" + msg
                     unexpected_successes.put(test)
