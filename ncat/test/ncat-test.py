@@ -83,7 +83,7 @@ def server_default_listen_address_and_port_ipv4():
         do_write(c.stdin, b"abc\n")
         assert_equal(do_read(s.stdout), b"abc\n")
 
-        c2 = ncat("127.0.0.1")
+        c2 = ncat("-6", "::1")
         do_write(c2.stdin, b"abc\n")
         assert_equal(do_read(s.stdout), b"abc\n")
 
