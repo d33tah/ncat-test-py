@@ -19,7 +19,6 @@ if sys.platform == "cygwin" or sys.platform.startswith("win"):
         pass
     def do_read(fp):
         fh = msvcrt.get_osfhandle(fp.fileno())
-        
 else:
     import fcntl
     def make_nonblocking(fp):
