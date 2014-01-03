@@ -107,7 +107,13 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
         while True:
             test = q.get(timeout=WAIT_TIMEOUT)
             should_complete = True
-            if test():
+            success = False
+            error_msg = ""
+            try:
+                success = test()
+            except Exception as e:
+                error_msg = " (%s)" % repr(e)
+            if success:
                 msg = "PASS:\t%s" % test.name
                 if test.xfail:
                     msg = "UNEX" + msg
@@ -121,13 +127,11 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
                     expected_failures.put(test)
                 else:
                     failures.put(test)
-            print(msg)
+            print(msg + error_msg)
             q.task_done()
             should_complete = False
     except queue.Empty:
         return
-    except Exception as e:
-        traceback.print_exc()
     finally:
         if should_complete:
             q.task_done()
