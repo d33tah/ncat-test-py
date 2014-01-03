@@ -19,6 +19,8 @@ if sys.platform == "cygwin" or sys.platform.startswith("win"):
         pass
     def do_read(fp):
         fh = msvcrt.get_osfhandle(fp.fileno())
+        # TODO: call PeekNamedPipe on the HANDLE to find out how many bytes
+        # are waiting and erad them.
 else:
     import fcntl
     def make_nonblocking(fp):
