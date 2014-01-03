@@ -47,9 +47,9 @@ def ncat_test(name, xfail=False):
     return wrap
 
 
-def ncat(arg):
+def ncat(*args):
     # TODO: replace "ncat" with an OS-dependent path to ncat.
-    proc = subprocess.Popen(["ncat", arg],
+    proc = subprocess.Popen(["ncat"] + list(args),
                             stdout=subprocess.PIPE,
                             stdin=subprocess.PIPE,
                             stderr=subprocess.PIPE)
