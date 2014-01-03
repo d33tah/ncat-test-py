@@ -57,6 +57,7 @@ else:
 NUM_THREADS = 2
 WAIT_TIMEOUT = 0.1
 tests = []
+STDOUT_LOCK = threading.Lock()
 
 
 def ncat_test(name, xfail=False):
@@ -174,7 +175,11 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
                     expected_failures.put(test)
                 else:
                     failures.put(test)
+
+            STDOUT_LOCK.acquire()
             print(msg + error_msg)
+            STDOUT_LOCK.release()
+
             q.task_done()
             should_complete = False
     except queue.Empty:
