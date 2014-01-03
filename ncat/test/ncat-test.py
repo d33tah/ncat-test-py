@@ -159,7 +159,9 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
             try:
                 success = test()
             except Exception as e:
-                error_msg = " (%s)" % repr(e)
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                lineno = traceback.extract_tb(exc_traceback)[1][1]
+                error_msg = " (line %d: %s)" % (lineno, repr(e))
 
             if success:
                 msg = "PASS:\t%s" % test.name
