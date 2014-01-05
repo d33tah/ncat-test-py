@@ -78,15 +78,25 @@ def ncat_test(name, xfail=False):
     return wrap
 
 
+class ScopedPopen(subprocess.Popen):
+    """
+    A version of subprocess.Popen that terminates the process when it gets
+    garbage collected. This is supposed to make tests code simpler.
+    """
+    def __del__(self):
+        self.terminate()
+        subprocess.Popen.__del__(self)
+
+
 def ncat(*args):
     """
     Spawns an Ncat process with the given arguments and returns its object.
     """
     # TODO: replace "ncat" with an OS-dependent path to ncat.
-    proc = subprocess.Popen(["ncat"] + list(args),
-                            stdout=subprocess.PIPE,
-                            stdin=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+    proc = ScopedPopen(["ncat"] + list(args),
+                       stdout=subprocess.PIPE,
+                       stdin=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
     make_nonblocking(proc.stdout)
     make_nonblocking(proc.stderr)
     return proc
@@ -120,22 +130,17 @@ def server_default_listen_address_and_port_ipv4():
     """
     Run Ncat server, then connect to it over IPv4 and IPv6 using Ncat.
     """
-    try:
-        s = ncat("-lk")
+    s = ncat("-lk")
 
-        c = ncat("127.0.0.1")
-        do_write(c.stdin, b"abc\n")
-        assert_equal(do_read(s.stdout), b"abc\n")
+    c = ncat("127.0.0.1")
+    do_write(c.stdin, b"abc\n")
+    assert_equal(do_read(s.stdout), b"abc\n")
 
-        c2 = ncat("-6", "::1")
-        do_write(c2.stdin, b"abc\n")
-        assert_equal(do_read(s.stdout), b"abc\n")
+    c2 = ncat("-6", "::1")
+    do_write(c2.stdin, b"abc\n")
+    assert_equal(do_read(s.stdout), b"abc\n")
 
-        return True
-    finally:
-        s.terminate()
-        c.terminate()
-        c2.terminate()
+    return True
 
 # =============================================================================
 #
