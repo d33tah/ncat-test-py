@@ -84,7 +84,10 @@ class ScopedPopen(subprocess.Popen):
     garbage collected. This is supposed to make tests code simpler.
     """
     def __del__(self):
-        self.terminate()
+        try:
+            self.terminate()
+        except ProcessLookupError:
+            pass
         subprocess.Popen.__del__(self)
 
 
