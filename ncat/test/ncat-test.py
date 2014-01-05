@@ -149,11 +149,45 @@ def server_default_listen_address_and_port_ipv4():
 # =============================================================================
 
 
+def handle_test(test, unexpected_successes, successes, expected_failures,
+                failures):
+    """
+    Run the given test, interprets its result and prints a message.
+    """
+    success = False
+    error_msg = ""
+    try:
+        success = test()
+    except Exception as e:
+        exc_traceback = sys.exc_info()[2]
+        lineno = traceback.extract_tb(exc_traceback)[1][1]
+        error_msg = " (line %d: %s)" % (lineno, repr(e))
+
+    if success:
+        msg = "SUCC:\t%s" % test.name
+        if test.xfail:
+            msg = "UNEX" + msg
+            unexpected_successes.put(test)
+        else:
+            successes.put(test)
+    else:
+        msg = "FAIL:\t%s" % test.name
+        if test.xfail:
+            msg = "X" + msg
+            expected_failures.put(test)
+        else:
+            failures.put(test)
+
+    STDOUT_LOCK.acquire()
+    print(msg + error_msg)
+    STDOUT_LOCK.release()
+
+
 def tests_worker(q, unexpected_successes, successes, expected_failures,
                  failures):
     """
-    Code for the Ncat testing worker. Reads the tasks from the queue, runs
-    them, interprets the results and prints runtime information.
+    Code for the Ncat testing worker. Reads the tasks from the queue and runs
+    them.
     """
     should_complete = False  # should we perform q.task_done in case of an
                              # ugly exception?
@@ -161,35 +195,8 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
         while True:
             test = q.get(timeout=WAIT_TIMEOUT)
             should_complete = True
-
-            success = False
-            error_msg = ""
-            try:
-                success = test()
-            except Exception as e:
-                exc_traceback = sys.exc_info()[2]
-                lineno = traceback.extract_tb(exc_traceback)[1][1]
-                error_msg = " (line %d: %s)" % (lineno, repr(e))
-
-            if success:
-                msg = "SUCC:\t%s" % test.name
-                if test.xfail:
-                    msg = "UNEX" + msg
-                    unexpected_successes.put(test)
-                else:
-                    successes.put(test)
-            else:
-                msg = "FAIL:\t%s" % test.name
-                if test.xfail:
-                    msg = "X" + msg
-                    expected_failures.put(test)
-                else:
-                    failures.put(test)
-
-            STDOUT_LOCK.acquire()
-            print(msg + error_msg)
-            STDOUT_LOCK.release()
-
+            handle_test(test, unexpected_successes, successes,
+                        expected_failures, failures)
             q.task_done()
             should_complete = False
     except queue.Empty:
