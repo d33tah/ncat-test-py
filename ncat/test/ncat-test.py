@@ -21,6 +21,7 @@ else:
 if sys.platform == "cygwin" or sys.platform.startswith("win"):
     import ctypes
     import msvcrt
+
     def make_nonblocking(fp):
         """
         Switch the given object to non-blocking mode.
@@ -28,6 +29,7 @@ if sys.platform == "cygwin" or sys.platform.startswith("win"):
         Does nothing under Windows.
         """
         pass
+
     def do_read(fp):
         """
         Read all the data from the given subprocess PIPE without blocking the
@@ -38,6 +40,7 @@ if sys.platform == "cygwin" or sys.platform.startswith("win"):
         # are waiting and read them.
 else:
     import fcntl
+
     def make_nonblocking(fp):
         """
         Switch the given object to non-blocking mode.
@@ -45,6 +48,7 @@ else:
         fd = fp.fileno()
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
     def do_read(fp):
         """
         Read all the data from the given subprocess PIPE without blocking the
@@ -95,7 +99,6 @@ def do_write(fp, buf):
     """
     fp.write(buf)
     fp.flush()
-
 
 
 def assert_equal(arg1, arg2):
@@ -159,7 +162,7 @@ def tests_worker(q, unexpected_successes, successes, expected_failures,
             try:
                 success = test()
             except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
+                exc_traceback = sys.exc_info()[2]
                 lineno = traceback.extract_tb(exc_traceback)[1][1]
                 error_msg = " (line %d: %s)" % (lineno, repr(e))
 
