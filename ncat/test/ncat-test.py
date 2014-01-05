@@ -86,7 +86,7 @@ class ScopedPopen(subprocess.Popen):
     def __del__(self):
         try:
             self.terminate()
-        except ProcessLookupError:
+        except:
             pass
         subprocess.Popen.__del__(self)
 
