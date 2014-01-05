@@ -146,6 +146,20 @@ def server_default_listen_address_and_port_ipv4():
 
     return True
 
+
+@ncat_test("Server default listen address --udp IPV6")
+def server_default_listen_address_udp_ipv6():
+    """
+    Run Ncat UDP server, then connect to it using Ncat. Make sure that the
+    message that the client sends get received.
+    """
+    s = ncat("-l", "--udp")
+    c = ncat("::1", "--udp")
+    do_write(c.stdin, b"abc\n")
+    assert_equal(do_read(s.stdout), b"abc\n")
+    return True
+
+
 # =============================================================================
 #
 # INDIVIDUAL TESTS END HERE
