@@ -131,7 +131,8 @@ def assert_equal(arg1, arg2):
 @ncat_test("Server default listen address and port IPv4")
 def server_default_listen_address_and_port_ipv4():
     """
-    Run Ncat server, then connect to it over IPv4 and IPv6 using Ncat.
+    Run Ncat server, then connect to it with TCP over IPv4 and IPv6 using Ncat.
+    Make sure that the messages both clients send gets received.
     """
     s = ncat("-lk")
 
